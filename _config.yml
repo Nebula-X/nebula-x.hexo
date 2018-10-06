@@ -3,12 +3,12 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
-subtitle:
-description:
+title: 星云数联
+subtitle: IT技术分享Blog
+description: 
 keywords:
-author: John Doe
-language:
+author: Nebula-X
+language: zh-Hans
 timezone:
 
 # URL
@@ -78,4 +78,6 @@ theme: landscape
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type:
+  type: git
+  repo: https://github.com/Nebula-X/nebula-x.github.io.git
+  branch: master
