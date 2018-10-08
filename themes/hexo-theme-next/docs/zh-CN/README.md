@@ -1,18 +1,3 @@
-### 部署流程
-
-<pre>
-    hexo clean
-    hexo g
-    hexo d
-</pre>
-
-### 主题使用流程
-<pre>
-    hexo-theme-next 主题
-    https://github.com/theme-next/hexo-theme-next
-</pre>
-
-
 <div align="right">语言: <a title="英语" href="../../README.md">:us:</a>
 :cn:
 <a title="俄语" href="../../docs/ru/README.md">:ru:</a></div>
