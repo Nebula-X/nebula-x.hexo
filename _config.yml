@@ -3,15 +3,15 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 胡伟煌 
+title: 招景滔
 subtitle: 个人博客
-author: 胡伟煌
+author: 招景滔
 language:
 timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://www.huweihuang.com/       # Note: don't forget to modify the CNAME file to your url
+url: https://www.nebula-x.cn/       # Note: don't forget to modify the CNAME file to your url
 root: /
 #permalink: :year/:month/:day/:title/
 permalink: :category/:title/
@@ -21,25 +21,25 @@ permalink_defaults:
 #Custom Setting Start
 
 # Site settings
-SEOTitle: 胡伟煌 | Blog
-email: huweihuang@foxmail.com
+SEOTitle: 招景滔 | Blog
+email: zhaojt_exam@126.com
 description: ""
 keyword: ""
 header-img: http://ozilwgpje.bkt.clouddn.com/scenery/car.jpg?imageslim
 article-img: /img/article_header/article_bg.jpg
 404-img: /img/header_img/404.png
 signature: false #show signature
-signature-img: img/signature/BeanTechSign-white.png 
+signature-img: img/signature/BeanTechSign-white.png
 
 
 # SNS settings
 # RSS: false
 # weibo_username:     Demonbaneen
 # zhihu_username:     Demonbane
-github_username:    huweihuang
+github_username:    nebula-x
 # twitter_username:   Demonbane_x
 #facebook_username:  YenYuHsuan
-linkedin_username:  huweihuang
+linkedin_username:  nebula-x
 
 # Build settings
 anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
@@ -88,18 +88,18 @@ featured-condition-size: 1              # A tag will be featured if the size of 
 
 ## Friends
 friends: [
-    {
-        title: "CSDN Blog 胡伟煌",
-        href: "http://blog.csdn.net/huwh_"
-    },
-    {
-        title: "DockOne 胡伟煌",
-        href: "http://dockone.io/people/胡伟煌"
-    },
-    {
-        title: "阿里云栖社区 胡伟煌",
-        href: "https://yq.aliyun.com/u/huweihuang"
-    }
+#    {
+#        title: "CSDN Blog 胡伟煌",
+#        href: "http://blog.csdn.net/huwh_"
+#    },
+#    {
+#        title: "DockOne 胡伟煌",
+#        href: "http://dockone.io/people/胡伟煌"
+#    },
+#    {
+#        title: "阿里云栖社区 胡伟煌",
+#        href: "https://yq.aliyun.com/u/huweihuang"
+#    }
 ]
 
 
@@ -163,7 +163,7 @@ archive_generator:
   yearly: true
   monthly: true
   daily: false
-  
+
 # Markdown-it config
 ## Docs: https://github.com/celsomiranda/hexo-renderer-markdown-it/wiki
 markdown:
@@ -174,7 +174,7 @@ markdown:
     linkify: true
     typographer: true
     quotes: '“”‘’'
-  
+
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 
@@ -197,11 +197,11 @@ markdown:
 # reference: https://github.com/metowolf/MetingJS & https://github.com/MoePlayer/APlayer
 metingjs: false
 data-id: 2423410161
-data-server: netease  
+data-server: netease
 data-type: playlist
 data-fixed: true
   # data-mini:
-  # data-autoplay:    
+  # data-autoplay:
 
 ## Themes: https://hexo.io/themes/
 theme: huweihuang
@@ -216,6 +216,6 @@ sitemap:
 # branch: master
 deploy:
   type: git
-  repository: https://github.com/huweihuang/hexo-theme-huweihuang
-  branch: gh-pages
-  message: Update CNAME
+  repo: https://github.com/Nebula-X/nebula-x.github.io.git
+  branch: master
+#  message: Update CNAME
