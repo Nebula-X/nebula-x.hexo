@@ -19,8 +19,8 @@ permalink_defaults:
 #Custom Setting Start
 
 # Site settings
-SEOTitle: Beantech | 豆科技
-email: beantech@gmail.com
+SEOTitle: Nebula-X | 星云数联
+email: zhaojt_exam@126.com
 description: ""
 keyword: ""
 header-img: img/header_img/home-bg-2-dark.png
@@ -30,12 +30,12 @@ signature-img: img/signature/BeanTechSign-white.png
 
 # SNS settings
 # RSS: false
-# weibo_username:     Demonbaneen
-# zhihu_username:     Demonbane
-github_username:    YenYuHsuan
+weibo_username:     2168119754
+zhihu_username:     zhao-xian-sheng-78-18
+github_username:    nebula-x
 # twitter_username:   Demonbane_x
-facebook_username:  YenYuHsuan
-linkedin_username:  yu-hsuan-yen
+#facebook_username:  YenYuHsuan
+#linkedin_username:  yu-hsuan-yen
 
 # Build settings
 anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
