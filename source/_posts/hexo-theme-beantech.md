@@ -1,7 +1,7 @@
 ---
-title: "[Hexo] Theme BeanTech"
+title: "[Hexo] 主题使用教程"
 catalog: true
-date: 2017-03-18 10:51:24
+date: 2018-11-09 00:23:00
 subtitle: "This is hexo theme Demo."
 header-img: "Demo.png"
 tags:

@@ -60,7 +60,7 @@ ga_domain: yoursite
 
 # Sidebar settings
 sidebar: true                       # whether or not using Sidebar.
-sidebar-about-description: "您好，欢迎来到我的Blog,我是招景滔，是一名全栈程序员，下面是我的技术栈: Golang,Python,Android,PHP,ES6,Vue,小程序"
+sidebar-about-description: "您好,我是招景滔,欢迎来到我的Blog"
 sidebar-avatar: img/avatar.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 widgets:
 - featured-tags
