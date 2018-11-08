@@ -15,7 +15,7 @@ layout: layout
                 post-container">
 
                 <%- page.content %>
-                
+
 
                 <hr>
                 <!-- Pager -->
@@ -76,10 +76,10 @@ layout: layout
                 <% } %>
                 <!-- disqus comment end -->
             </div>
-            
+
             <!-- Tabe of Content -->
             <%- partial('_partial/toc') %>
-                
+
             <!-- Sidebar Container -->
             <div class="
                 col-lg-8 col-lg-offset-2
@@ -90,7 +90,7 @@ layout: layout
                 <% if(config['featured-tags']) { %>
                 <section>
                     <!-- no hr -->
-                    <h5><a href="<%= config.root %>tags/">FEATURED TAGS</a></h5>
+                    <h5><a href="<%= config.root %>tags/">标签</a></h5>
                     <div class="tags">
                        <% page.tags.forEach(function(tag){ %>
                           <a class="tag" href="<%= config.root %>tags/#<%= tag.name %>" title="<%= tag.name %>"><%= tag.name %></a>
@@ -102,7 +102,7 @@ layout: layout
                 <!-- Friends Blog -->
                 <% if(config.friends) { %>
                 <hr>
-                <h5>FRIENDS</h5>
+                <h5>友情链接</h5>
                 <ul class="list-inline">
 
                     <% config.friends.forEach(function(friend){ %>

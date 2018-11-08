@@ -61,7 +61,7 @@ ga_domain: yoursite
 # Sidebar settings
 sidebar: true                       # whether or not using Sidebar.
 sidebar-about-description: "Hi, i'm John Doe"
-sidebar-avatar: img/ironman-draw.png      # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-avatar: img/avatar.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 widgets:
 - featured-tags
 - short-about
@@ -83,19 +83,20 @@ featured-condition-size: 1              # A tag will be featured if the size of 
 
 ## Friends
 friends: [
-    {
-        title: "Bean Tech",
-        href: "http://beantech.org"
-    },{
-        title: "Kaijun's Blog",
-        href: "http://blog.kaijun.rocks"
-    },{
-        title: "Hux Blog",
-        href: "http://huangxuan.me"
-    },{
-        title: "It Helps SEO",
-        href: "#"
-    }
+{
+  title: "Ewan Valentine",
+  href: "https://ewanvalentine.io/"
+}
+#  ,{
+#  title: "Kaijun's Blog",
+#  href: "http://blog.kaijun.rocks"
+#},{
+#  title: "Hux Blog",
+#  href: "http://huangxuan.me"
+#},{
+#  title: "It Helps SEO",
+#  href: "#"
+#}
 ]
 
 

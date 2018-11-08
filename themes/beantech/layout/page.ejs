@@ -35,7 +35,7 @@ layout: layout
                 <!-- Friends Blog -->
                 <% if(config.friends) { %>
                 <hr>
-                <h5>FRIENDS</h5>
+                <h5>友情链接</h5>
                 <ul class="list-inline">
 
                     <% config.friends.forEach(function(friend){ %>
@@ -55,7 +55,7 @@ layout: layout
                 col-xs-12
                 post-container
             ">
-            
+
                 <%- page.content || body %>
 
                 <!-- 如果开启评论功能 -->
@@ -117,7 +117,7 @@ layout: layout
                             (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
                         })();
 
-                        
+
                     </script>
                     <!-- disqus 公共JS代码 end -->
                     <% } %>
