@@ -1,8 +1,8 @@
 ---
 layout: "about"
-title: "About"
-date: 2016-04-21 04:48:33
-description: "Wish for the Best, Prepare for the Worst"
+title: "关于我"
+date: 2018-11-09 00:00:00
+description: "勿在浮沙筑高台，不为浮华易匠心"
 header-img: "img/header_img/Iron-Man-3.jpg"
 comments: true
 ---
