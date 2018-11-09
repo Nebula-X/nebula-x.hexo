@@ -6,7 +6,6 @@ subtitle: "This is hexo theme Demo."
 header-img: "Demo.png"
 tags:
 - Hexo
-- Blog
 catagories:
 - Hexo
 ---
