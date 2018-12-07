@@ -35,3 +35,21 @@ catagories:
 ![日志收集与处理](日志收集与处理.png)
 
 5. 等等
+
+### RabbitMQ安装 (不做详细的介绍)
+>自行参考网址: https://www.cnblogs.com/zzpblogs/p/8168763.html
+
+### RabbitMQ的简单使用
+
+#### 用户管理
+1.添加用户
+![用户管理-添加用户](用户管理-添加用户.png)
+
+#### virtual hosts管理
+virtual hosts 相当于mysql的db(即数据库)，一般以"/"开头
+创建完数据库后，就要对数据库进行授权，
+![vhost](vhost.png)
+![v-host授权](v-host授权.png)
+![v-host添加](v-host添加.png)
+![v-host授权2](v-host授权2.png)
+![v-host授权后](v-host授权后.png)
