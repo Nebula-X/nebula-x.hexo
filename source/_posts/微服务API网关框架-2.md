@@ -73,6 +73,10 @@ catagories:
     
     重启nginx
     kill -HUP master进程号
+
+## Nginx default_type  
+    default_type  application/octet-stream; 默认为文件输出，所以我们一般需要考虑一下输出的格式，一般来说我们会使用text/html来替代，
+    但是一般是就近原则，所以使用起来的话可以不那么讲究
     
 ## Nginx平滑升级
 ![平滑升级](平滑升级.png) 
@@ -116,3 +120,17 @@ catagories:
 ![nginx日志以及切割-9](nginx日志以及切割-9.png)
 ![nginx日志以及切割-10](nginx日志以及切割-10.png)
 ![nginx日志以及切割-11](nginx日志以及切割-11.png)
+
+### Nginx的Location详解
+Location是一个路由规则的运算,每一个server可以支持多个location
+![nginx的location配置-1](nginx的location配置-1.png)
+![nginx的location配置-2](nginx的location配置-2.png)
+![nginx的location配置-3](nginx的location配置-3.png)
+![nginx的location配置-4](nginx的location配置-4.png)
+![nginx的location配置-5](nginx的location配置-5.png)
+![nginx的location配置-6](nginx的location配置-6.png)
+![nginx的location配置-7](nginx的location配置-7.png)
+
+### Nginx负载均衡
+
+
