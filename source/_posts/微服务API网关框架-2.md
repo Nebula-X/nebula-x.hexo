@@ -132,5 +132,12 @@ Location是一个路由规则的运算,每一个server可以支持多个location
 ![nginx的location配置-7](nginx的location配置-7.png)
 
 ### Nginx负载均衡
+![nginx负载均衡-1](nginx负载均衡-1.png)
+![nginx负载均衡-2](nginx负载均衡-2.png)
+![nginx负载均衡-3](nginx负载均衡-3.png)
 
+### Nginx的第三方模块安装
+nginx安装第三方模块-echo模块安装
+但是自己安装第三方模块的步骤实在太繁琐，所以强烈推荐使用openresty来进行开发
+![nginx安装第三方模块-1](nginx安装第三方模块-1.png)
 
