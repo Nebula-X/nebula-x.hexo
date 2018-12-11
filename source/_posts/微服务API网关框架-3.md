@@ -9,3 +9,18 @@ tags:
 catagories:
 - 微服务API网关
 ---
+
+#Openresty
+
+## Nginx的优点和Openresty简介
+![nginx-1.png](nginx-1.png)
+![nginx-2.png](nginx-2.png)
+![nginx-3.png](nginx-3.png)
+![nginx-4.png](nginx-4.png)
+![nginx-5.png](nginx-5.png)
+![nginx-6.png](nginx-6.png)
+![nginx-7.png](nginx-7.png)
+
+## Openresty安装
+![openresty安装-1](openresty安装-1.png)
+
