@@ -23,4 +23,5 @@ catagories:
 
 ## Openresty安装
 ![openresty安装-1](openresty安装-1.png)
+![openresty安装-2](openresty安装-2.png)
 
