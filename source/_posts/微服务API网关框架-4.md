@@ -9,3 +9,11 @@ tags:
 catagories:
 - 微服务API网关
 ---
+
+#lua
+
+## 初识
+![lua初识-1](lua初识-1.png)
+
+## 运行lua文件
+![lua执行文件-1](lua执行文件-1.png)
