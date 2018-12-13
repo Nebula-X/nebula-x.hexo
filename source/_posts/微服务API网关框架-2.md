@@ -141,3 +141,10 @@ nginx安装第三方模块-echo模块安装
 但是自己安装第三方模块的步骤实在太繁琐，所以强烈推荐使用openresty来进行开发
 ![nginx安装第三方模块-1](nginx安装第三方模块-1.png)
 
+
+### Nginx的内部变量
+![nginx的内部变量-1](nginx的内部变量-1.png)
+![nginx的内部变量-2](nginx的内部变量-2.png)
+![nginx的内部变量-3](nginx的内部变量-3.png)
+![nginx的内部变量-4](nginx的内部变量-4.png)
+

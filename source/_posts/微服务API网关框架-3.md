@@ -25,3 +25,5 @@ catagories:
 ![openresty安装-1](openresty安装-1.png)
 ![openresty安装-2](openresty安装-2.png)
 
+## Openresty的Hello World
+![openresty的Helloworld-1](openresty的Helloworld-1.png)
