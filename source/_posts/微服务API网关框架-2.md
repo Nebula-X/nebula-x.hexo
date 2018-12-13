@@ -147,4 +147,5 @@ nginx安装第三方模块-echo模块安装
 ![nginx的内部变量-2](nginx的内部变量-2.png)
 ![nginx的内部变量-3](nginx的内部变量-3.png)
 ![nginx的内部变量-4](nginx的内部变量-4.png)
+![nginx的内部变量-5](nginx的内部变量-5.png)
 
