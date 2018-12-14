@@ -44,4 +44,8 @@ catagories:
 ![lua基本语法-24](lua基本语法-24.png)
 ![lua基本语法-25](lua基本语法-25.png)
 ![lua基本语法-26](lua基本语法-26.png)
+![lua基本语法-27](lua基本语法-27.png)
+![lua基本语法-28](lua基本语法-28.png)
+![lua基本语法-29](lua基本语法-29.png)
+![lua基本语法-30](lua基本语法-30.png)
 
