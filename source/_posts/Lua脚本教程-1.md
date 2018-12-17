@@ -330,11 +330,18 @@ tags: Lua
 #### table(表)   
     在 Lua 里，table 的创获取数据的类型建是通过"构造表达式"来完成，最简单构造表达式是{}，用来创建一个空表
     也可以在表里添加一些数据，直接初始化表:
-    1. 初始化表
+    1. 初始化表与移除引用
         -- 创建一个空的 table
         local tbl1 = {}         
         -- 直接初始表
         local tbl2 = {"apple", "pear", "orange", "grape"}
+        -- 初始化表
+        mytable = {} 
+        -- 指定值
+        mytable[1]= "Lua"
+        -- 移除引用
+        mytable = nil
+        -- lua 垃圾回收会释放内存
     
     2. -- 创建一个空的 table
        local tbl1 = {}
@@ -355,6 +362,48 @@ tags: Lua
         www.w3cschool.cc
         > print(site.key)
         www.w3cschool.cc
+
+##### table -- 操作
+    1.table.concat (table [, sep [, start [, end]]]):concat是concatenate(连锁, 连接)的缩写. table.concat()函数列出参数中指定table的数组部分从start位置到end位置的所有元素, 元素间以指定的分隔符(sep)隔开。
+    2.table.insert (table, [pos,] value):在table的数组部分指定位置(pos)插入值为value的一个元素. pos参数可选, 默认为数组部分末尾.
+    3.table.remove (table [, pos]):返回table数组部分位于pos位置的元素. 其后的元素会被前移. pos参数可选, 默认为table长度, 即从最后一个元素删起。
+    4.table.sort (table [, comp]):对给定的table进行升序排序
+
+##### table -- table间连接,table中的插入,移除,排序
+    使用 concat() 方法来连接两个 table
+        fruits = {"banana","orange","apple"}
+        -- 返回 table 连接后的字符串
+        print("连接后的字符串 ",table.concat(fruits)
+        -- 指定连接字符
+        print("连接后的字符串 ",table.concat(fruits,", "))
+        -- 指定索引来连接 table
+        print("连接后的字符串 ",table.concat(fruits,", ", 2,3))
+        
+        fruits = {"banana","orange","apple"}
+        -- 在末尾插入
+        table.insert(fruits,"mango")
+        print("索引为 4 的元素为 ",fruits[4])
+        
+        -- 在索引为 2 的键处插入
+        table.insert(fruits,2,"grapes")
+        print("索引为 2 的元素为 ",fruits[2])
+        
+        print("最后一个元素为 ",fruits[5])
+        table.remove(fruits)
+        print("移除后最后一个元素为 ",fruits[5])    
+        
+        --排序
+        fruits = {"banana","orange","apple","grapes"}
+        print("排序前")
+        for k,v in ipairs(fruits) do
+            print(k,v)
+        end
+        
+        table.sort(fruits)
+        print("排序后")
+        for k,v in ipairs(fruits) do
+            print(k,v)
+        end
 
 ##### table -- 数组
     1. 一维数组
