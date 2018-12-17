@@ -241,8 +241,73 @@ tags: Lua
         function(key,val)--匿名函数
             return key.."="..val;
         end
-        );    
+        );  
+    3. 多返回值
+        Lua函数中，在return后列出要返回的值的列表即可返回多值
+            function maximum (a)
+                local mi = 1             -- 最大值索引
+                local m = a[mi]          -- 最大值
+                for i,val in ipairs(a) do
+                   if val > m then
+                       mi = i
+                       m = val
+                   end
+                end
+                return m, mi
+            end
+            
+            print(maximum({8,10,23,12,5}))     
 
+##### 函数定义
+    optional_function_scope function function_name( argument1, argument2, argument3..., argumentn)
+        function_body
+        return result_params_comma_separated
+    end
+    
+    optional_function_scope: 该参数是可选的制定函数是全局函数还是局部函数，未设置该参数默认为全局函数，如果你需要设置函数为局部函数需要使用关键字 local。
+    function_name: 指定函数名称。
+    argument1, argument2, argument3..., argumentn: 函数参数，多个参数以逗号隔开，函数也可以不带参数。
+    function_body: 函数体，函数中需要执行的代码语句块。
+    result_params_comma_separated: 函数返回值，Lua语言函数可以返回多个值，每个值以逗号隔开。
+    
+##### 函数的可变参数
+       1. 在函数参数列表中使用三点 ... 表示函数有可变的参数
+            function add(...)  
+            local s = 0  
+              for i, v in ipairs{...} do   --> {...} 表示一个由所有变长参数构成的数组  
+                s = s + v  
+              end  
+              return s  
+            end  
+            print(add(3,4,5,6,7))  --->25
+       2. select("#",...) 来获取可变参数的数量
+                function average(...)
+                   result = 0
+                   local arg={...}
+                   for i,v in ipairs(arg) do
+                      result = result + v
+                   end
+                   print("总共传入 " .. select("#",...) .. " 个数")
+                   return result/select("#",...)
+                end
+                
+                print("平均值为",average(10,5,3,4,5,6))
+            
+            在遍历变长参数的时候只需要使用 {…}，然而变长参数可能会包含一些 nil，那么就可以用 select 函数来访问变长参数了：select('#', …) 或者 select(n, …)
+            select('#', …) 返回可变参数的长度
+            select(n, …) 用于访问 n 到 select('#',…) 的参数
+            调用select时，必须传入一个固定实参selector(选择开关)和一系列变长参数。如果selector为数字n,那么select返回它的第n个可变实参，否则只能为字符串"#",这样select会返回变长参数的总数
+                do  
+                    function foo(...)  
+                        for i = 1, select('#', ...) do  -->获取参数总数
+                            local arg = select(i, ...); -->读取参数
+                            print("arg", arg);  
+                        end  
+                    end  
+                  
+                    foo(1, 2, 3, 4);  
+                end
+        
 #### thread(线程)
     在 Lua 里，最主要的线程是协同程序（coroutine）。
     协程跟线程（thread）差不多，拥有自己独立的栈、局部变量和指令指针，可以跟其他协同程序共享全局变量和其他大部分东西。
