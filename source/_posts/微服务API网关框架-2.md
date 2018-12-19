@@ -201,6 +201,27 @@ catagories:
     1个worker进程 能够最大打开的文件数（线程数）worker_connections=65535 （参考worker_rlimit_nofile  ---->  linux  ulimit -n）
     最大的客户端连接数 max_clients = （多少个工作进程数）worker_processes * （1个工作线程的处理线程数）worker_connections    8*65535
     
+#### Nginx的并发量计算
+    #nginx作为http服务器
+    #请求模型   client <---> nginx
+    #max_clients = worker_processes * worker_connections/2
+    
+    #nginx作为反向代理服务器的时候
+    #请求模型   client <---> nginx  <----> web server
+    #max_clients = worker_processes * worker_connections/4
+    (
+    为什么除以2：该公式基于http 1.1协议，一次请求大多数浏览器发送两次连接，并不是request和response响应占用两个线程（很多人也是这么认为，实际情况：请求是双向的，连接是没有方向的，由上面的图可以看出来)
+    为什么除以4：因nginx作为方向代理，客户端和nginx建立连接，nginx和后端服务器也要建立连接
+    )
+    
+    由此，我们可以计算nginx作为http服务器最大并发量(作为反向代理服务器自己类推)，可以为压测和线上环境的优化提供一些理论依据：
+    单位时间（keepalive_timeout）内nginx最大并发量C
+    C=worker_processes * worker_connections/2=8*65535/2
+    
+    而每秒的并发量CS
+    CS=worker_processes * worker_connections/(2*65)    
+    
+    
 #### Nginx全局错误日志
     #全局错误日志 
         #nginx的error_log类型如下（从左到右：debug最详细 crit最少）： 
