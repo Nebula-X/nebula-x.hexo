@@ -14,6 +14,30 @@ catagories:
 
 ## Nginx命令
 
+### Nginx的基本配置
+    Nginx的主配置文件是：nginx.conf，nginx.conf主要组成如下：
+    
+    # 全局区   有一个工作子进程，一般设置为CPU数 * 核数
+    worker_processes  1; 
+    events {
+        # 一般是配置nginx进程与连接的特性
+        # 如1个word能同时允许多少连接，一个子进程最大允许连接1024个连接
+         worker_connections  1024;
+    }
+     # 配置HTTP服务器配置段
+    http {
+        # 配置虚拟主机段
+        server {
+             # 定位，把特殊的路径或文件再次定位。
+             location  {
+                       
+             } 
+        }
+         server {
+                       
+         } 
+    }
+
 ### nginx启动
     指令：nginx程序   -c   nginx配置文件
     # /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
@@ -145,3 +169,181 @@ catagories:
             重启工作进程
         (2)优雅的关闭新的主进程
             kill -QUIT 10012  --新主进程号
+
+#### Nginx 用户
+    #以哪个用户，运行nginx应用
+    #nobody是个低权限用户，为了安全
+    #user nobody;
+
+#### Nginx 进程数设置    
+    #nginx进程数 启动进程,通常设置成 cpu的核数
+    查看cpu核数
+    # cat /proc/cpuinfo
+    worker_processes  1;
+    
+#### Nginx全局错误日志
+    #全局错误日志 
+        #nginx的error_log类型如下（从左到右：debug最详细 crit最少）： 
+        #[ debug | info | notice | warn | error | crit ] 
+    
+    #例如：error_log logs/nginx_error.log  crit; 
+    #解释：日志文件存储在nginx安装目录下的 logs/nginx_error.log ，错误类型为 crit ，也就是记录最少错误信息;
+        error_log  logs/error.log;
+        error_log  logs/notice.log  notice;
+        error_log  logs/info.log  info;
+    
+#### Nginx主进程ID
+    #PID文件，记录当前启动的nginx的进程ID
+        pid        logs/nginx.pid; # 主进程ID存放位置
+        
+#### Nginx的worker进程
+    worker_rlimit_nofile 65535;
+    
+    #这个参数表示worker进程最多能打开的文件句柄数，基于liunx系统ulimit设置
+    #查看系统文件句柄数最大值：ulimit -n
+    #Linux一切皆文件，所有请求过来最终目的访问文件，所以该参数值设置等同于liunx系统ulimit设置为优
+    #可以通过linux命令设置  最大的文件句柄数65535
+
+#### Nginx工作模式与连接数上限
+    events {
+       #网络模型高效(相当于建立索引查找结果)，nginx配置应该启用该参数
+       #但是仅用于linux2.6以上内核,可以大大提高nginx的性能
+       use   epoll;             
+       #该参数表示设置一个worker进程最多开启多少线程数
+       #优化设置应该等同于worker_rlimit_nofile设置值，表明一个线程处理一个http请求，同时可以处理一个文件数，各个模块之间协调合作不等待。
+       worker_connections  65535;
+    }
+                
+#### Nginx负载均衡
+     #设定http服务器，利用它的反向代理功能提供负载均衡支持
+         http {
+              #设定mime类型,类型由mime.type文件定义
+              #MIME(Multipurpose Internet Mail Extensions)多用途互联网邮件扩展类型。是设定某种扩展名的文件用一种应用程序来#打开的方式类型，当该扩展名文件被访问的时候，浏览器会自动使用指定应用程序来打开
+             include       /etc/nginx/mime.types;
+             default_type  application/octet-stream;
+             #设定日志格式
+            log_format  main  '[$remote_addr] - [$remote_user] [$time_local] "$request" '
+                           '$status $body_bytes_sent "$http_referer" '
+                           '"$http_user_agent" "$http_x_forwarded_for"';
+             access_log    /var/log/nginx/access.log;
+     
+             #sendfile 开启高效文件传输模式，sendfile指令指定nginx是否调用sendfile函数来输出文件，对于普通应用设为 on，如果用来进行下载等应用磁盘IO重负载应用，可设置为off，以平衡磁盘与网络I/O处理速度，降低系统的负载。注意：如果图片显示不正常把这个改成off。
+             sendfile        on;
+             tcp_nopush     on; #防止网络阻塞
+             tcp_nodelay        on; #防止网络阻塞
+     
+             #连接超时时间
+             #keepalive_timeout  0;  
+             keepalive_timeout  65; #长连接超时时间，单位是秒
+            
+     
+             #开启gzip压缩
+            gzip  on;
+     		gzip_disable "MSIE [1-6]\."; # IE6及以下禁止压缩 
+            gzip_min_length 1k; #最小压缩文件大小
+     		gzip_buffers 4 16k; #压缩缓冲区
+     		gzip_http_version 1.0; #压缩版本（默认1.1，前端如果是squid2.5请使用1.0）
+     		gzip_comp_level 2; #压缩等级
+     		gzip_types text/plain application/x-javascript text/css application/xml; #压缩类型
+     		gzip_vary on; #给CDN和代理服务器使用，针对相同url，可以根据头信息返回压缩和非压缩副本
+     
+     
+             #设定请求缓冲
+             client_header_buffer_size    1k;   #上传文件大小限制
+             large_client_header_buffers  4 4k;  #设定请求缓存
+     
+     
+             #设定负载均衡的服务器列表
+             upstream mysvr {
+     	        #weigth参数表示权值，权值越高被分配到的几率越大
+     	        server 192.168.8.1x:3128 weight=5;
+     	        server 192.168.8.2x:80  weight=1;
+     	        server 192.168.8.3x:80  weight=6;
+             }
+     
+             upstream mysvr2 {
+     	        #weigth参数表示权值，权值越高被分配到的几率越大
+     	        server 192.168.8.x:80  weight=1;
+     	        server 192.168.8.x:80  weight=6;
+             }
+     
+             #虚拟主机的配置
+            server {
+                 #侦听80端口
+                 listen       80;
+                 #设置编码
+      	          #charset koi8-r;
+     
+                 #定义使用www.xx.com访问 域名可以有多个，用空格隔开
+                 server_name  www.xx.com;
+     
+                 #设定本虚拟主机的访问日志
+                 access_log  logs/www.xx.com.access.log  main;
+     
+             #默认请求
+             location / {
+                   root   /root;      #定义服务器的默认网站根目录位置
+                   index index.php index.html index.htm;   #定义首页索引文件的名称
+     
+     
+                  proxy_pass  http://mysvr ;#请求转向mysvr 定义的服务器列表
+     
+                   client_max_body_size 10m;    #允许客户端请求的最大单文件字节数
+                   client_body_buffer_size 128k;  #缓冲区代理缓冲用户端请求的最大字节数，	
+     
+                  #以下是一些反向代理的配置可删除.
+     
+                   proxy_redirect off;
+     
+                   #后端的Web服务器可以通过X-Forwarded-For获取用户真实IP
+                   proxy_set_header Host $host;
+                   proxy_set_header X-Real-IP $remote_addr;
+                   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                   proxy_connect_timeout 90;  #nginx跟后端服务器连接超时时间(代理连接超时)
+                   proxy_send_timeout 90;        #后端服务器数据回传时间(代理发送超时)
+                   proxy_read_timeout 90;         #连接成功后，后端服务器响应时间(代理接收超时)
+                   proxy_buffer_size 4k;             #设置代理服务器（nginx）保存用户头信息的缓冲区大小
+                   proxy_buffers 4 32k;               #proxy_buffers缓冲区，网页平均在32k以下的话，这样设置
+                   proxy_busy_buffers_size 64k;    #高负荷下缓冲大小（proxy_buffers*2）
+                   proxy_temp_file_write_size 64k;  #设定缓存文件夹大小，大于这个值，将从upstream服务器传
+     
+             }
+     
+             # 定义错误提示页面
+             error_page   500 502 503 504 /50x.html; 
+                 location = /50x.html {
+                 root   /root;
+             }
+     
+             #本地动静分离反向代理配置
+     		#所有jsp的页面均交由tomcat或resin处理
+     		location ~ .(jsp|jspx|do)?$ {
+     			proxy_set_header Host $host;
+     			proxy_set_header X-Real-IP $remote_addr;
+     			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+     			proxy_pass http://127.0.0.1:8080;
+     		}
+     
+             #静态文件，nginx自己处理
+             location ~ ^/(images|javascript|js|css|flash|media|static)/ {
+                 root /var/www/virtual/htdocs;
+                 #过期30天，静态文件不怎么更新，过期可以设大一点，如果频繁更新，则可以设置得小一点。
+                 expires 30d;
+             }
+     
+             #设定查看Nginx状态的地址
+             location /NginxStatus {
+                 stub_status            on;
+                 access_log              on;
+                 auth_basic              "NginxStatus";
+                 auth_basic_user_file  conf/htpasswd;
+                 #htpasswd文件的内容可以用apache提供的htpasswd工具来产生。
+             }
+             #禁止访问 .htxxx 文件
+             location ~ /\.ht {
+                 deny all;
+             }
+     
+             }
+         }
+       
