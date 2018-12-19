@@ -176,10 +176,30 @@ catagories:
     #user nobody;
 
 #### Nginx 进程数设置    
-    #nginx进程数 启动进程,通常设置成 cpu的核数
-    查看cpu核数
-    # cat /proc/cpuinfo
-    worker_processes  1;
+    worker_processes：表示开启nginx的worker进程的个数，nginx启动会开两种进程，master进程用来管理调度，worker进程用来处理请求；
+    上面表示两种设置方法，比如
+    方法一：worker_processes auto;
+    　　表示设置服务器cpu核数匹配开启nginx开启的worker进程数    
+    　　查看cpu核数：cat /proc/cpuinfo    
+    方法二：nginx设置cpu亲和力
+    　　worker_processes 8;    
+    　　worker_cpu_affinity 00000001 00000010 00000100 00001000 00010000 00100000 01000000 10000000;    
+    　　00000001表示启用第一个CPU内核，00000010表示启用第二个CPU内核，以此类推
+    
+    worker_cpu_affinity：表示开启八个进程，第一个进程对应着第一个CPU内核，第二个进程对应着第二个CPU内核，以此类推。
+        这种设置方法更高效，因将每个cpu核提供给固定的worker进程服务，减少cpu上下文切换带来的资源浪费
+    
+    如果服务器cpu有限
+        比如：2核CPU，开启2个进程，设置如下 
+        worker_processes     2;   
+        worker_cpu_affinity 01 10;  
+        比如：4核CPU,开启4个进程，设置如下
+        worker_processes     4;
+        worker_cpu_affinity 0001 0010 0100 1000;
+    
+    8核cpu , worker_processes=8
+    1个worker进程 能够最大打开的文件数（线程数）worker_connections=65535 （参考worker_rlimit_nofile  ---->  linux  ulimit -n）
+    最大的客户端连接数 max_clients = （多少个工作进程数）worker_processes * （1个工作线程的处理线程数）worker_connections    8*65535
     
 #### Nginx全局错误日志
     #全局错误日志 
