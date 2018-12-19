@@ -83,7 +83,50 @@ catagories:
     CentOS
 
 ### Nginx安装
-    请自行搜索教程安装
+    1、Nginx下载：nginx-1.13.0.tar.gz，下载到：/opt/softwares/
+        $ wget http://nginx.org/download/nginx-1.13.0.tar.gz
+    2、Nginx解压安装：
+        $ tar -zxvf nginx-1.13.0.tar.gz -C ./
+    3、预先安装(nginx所需要的运行库)
+        $ yum -y install gcc gcc-c++ ncurses-devel perl pcre pcre-devel zlib gzip zlib-devel
+    4、Nginx编译
+        $ ./configure --prefix=/usr/local/nginx
+    5、安装Nginx：
+        安装命令：make & make install
+    6、查看安装路径
+        $ cd /usr/local/nginx
+        $ ll
+        
+        // 文件夹路径解读
+        conf 存放配置文件
+        html 网页文件
+        logs 存放日志
+        sbin   shell启动、停止等脚本
+    7、启动nginx
+        $ cd sbin
+        $ ./nginx
+    8、浏览器，访问ip地址，默认80端口
+        http://127.0.0.1
+    9、停止nginx
+        // 查询nginx的状态
+        $ ps -ef | grep nginx
+        执行命令：$ kill –INT 进程号
+        $ kill -INT 3844
+    
+        $ ./nginx -s stop
+    
+    10、重新读取配置文件
+        $ nginx -s reload
+    
+    11、检查配置文件是否正确
+    $ ./nginx -t
+    
+    问题报错：[error] invalid PID number "" in "/usr/local/nginx/logs/nginx.pid"
+    
+    解决方案:
+    // 注意: -c 带的文件路径必须是绝对路径，相对路径是不行的
+    # /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
+        -c的命令是指定配置文件位置
 
 ## 代理
 
