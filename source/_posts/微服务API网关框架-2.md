@@ -446,3 +446,92 @@ catagories:
     
     这样第二个虚拟主机也配置完成。说明一下 再配置server模块是，监听的端口 listen 和 server_name 组合起来是唯一的，如果server_name一样，那么listen监听的端口就不一样；如端口一样，server_name就不一样。这是很好理解的，虚拟主机的请求映射系统才能够判别。
 
+## Nginx日志与日志切割
+
+### 日志文件的格式配置
+    nginx服务器在运行的时候，会有各种操作，操作的信息会记录到日志文件中，日志文件的记录是有格式的。那我们如何设置日志文件的格式呢？
+    使用log_format指令进行配置文件格式
+    nginx的log_format有很多可选的参数用于指示服务器的活动状态，默认的是：
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '    '$status $body_bytes_sent "$http_referer" '    '"$http_user_agent" "$http_x_forwarded_for"';
+    
+    192.168.31.247 - - [11/Mar/2018:16:26:43 +0800] "GET / HTTP/1.1" 304 0 "-" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3350.0 Safari/537.36" "-"
+
+#### 日志相关参数
+    参数                      说明                                         示例
+    $remote_addr             客户端地址                                    211.28.65.253
+    $remote_user             客户端用户名称                                --
+    $time_local              访问时间和时区                                18/Jul/2012:17:00:01 +0800
+    $request                 请求的URI和HTTP协议                           "GET /article-10000.html HTTP/1.1"
+    $http_host               请求地址，即浏览器中你输入的地址（IP或域名）     www.wang.com 192.168.100.100
+    $status                  HTTP请求状态                                  200
+    $upstream_status         upstream状态                                  200
+    $body_bytes_sent         发送给客户端文件内容大小                        1547
+    $http_referer            url跳转来源                                   https://www.baidu.com/
+    $http_user_agent         用户终端浏览器等信息                           "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; SV1; GTB7.0; .NET4.0C;
+    $ssl_protocol            SSL协议版本                                   TLSv1
+    $ssl_cipher              交换数据中的算法                               RC4-SHA
+    $upstream_addr           后台upstream的地址，即真正提供服务的主机地址     10.10.10.100:80
+    $request_time            整个请求的总时间                               0.205
+    $upstream_response_time  请求过程中，upstream响应时间                    0.002
+    $http_x_forwarded_for    是反向代理服务器转发客户端地址的参数
+    
+    假设将Nginx服务器作为Web服务器，位于负载均衡设备、Squid、Nginx反向代理之后，不能获取到客户端的真实IP地址了。
+    原因是经过反向代理后，由于在客户端和Web服务器之间增加了中间层，因此Web服务器无法直接拿到客户端的IP。
+    通过$remote_addr变量拿到的将是反向代理服务器的IP地址。
+    但是，反向代理服务器在转发请求的HTTP头信息中，可以增加X-Forwarded-For信息，用以记录原有的客户端IP地址和原来客户端请求的服务器地址。
+    这时候，要用log_format指令设置日志格式，让日志记录X-Forearded-For信息中的IP地址，即客户的真实IP。
+    日志文件路径配置
+
+#### access_log指令
+    语法: access_log path [format [buffer=size [flush=time]]];
+    access_log path format gzip[=level] [buffer=size] [flush=time];
+    access_log off;
+    默认值: access_log logs/access.log combined;
+    配置段: 
+    gzip压缩等级。
+    buffer设置内存缓存区大小。
+    flush保存在缓存区中的最长时间。
+    不记录日志：access_log off;
+    使用默认combined格式记录日志：access_log logs/access.log 或 access_log logs/access.log combined;
+    值得注意的是，Nginx进程设置的用户和组必须对日志路径有创建文件的权限，否则，会报错。
+    此外，对于每一条日志记录，都将是先打开文件，再写入日志，然后关闭。可以使用open_log_file_cache来设置日志文件缓存(默认是off)。
+
+#### 日志文件切割
+    server1.log   ---->  server1-2018-03-11.log  ---> server1-2018-03-12.log
+                  ----》 server1-2018-03-10.log 
+    
+    通过mv命令 把当前log文件重命令
+    再用信号控制指令 发送重读日志指令  产生了新的日志log文件
+    
+    nginx日志默认情况下统统写入到一个文件中，文件会变的越来越大，非常不方便查看分析。以日期来作为日志的切割是比较好的，通常我们是以每日来做统计的。下面来说说nginx日志切割。
+    我们先手动完成日志文件切割
+    到logs目录中，先备份日志文件，在重新生成日志文件
+    mv access.log access_20180124.log
+    kill -USR1 pid进程号   #向 Nginx 主进程发送 USR1 信号。USR1 信号是重新打开日志文件
+
+#### 系统自动切割
+    利用sh脚本的方式执行刚才的手动操作，在每天凌晨执行一个计划任务 调用sh脚本，就完成的系统自动切割日志文件
+    
+    编写脚本
+    在nginx目录下logs目录
+    # touch cutlog.sh脚本
+    # vi cutlog.sh 
+    #!/bin/bash
+    LOGS_PATH=/usr/local/nginx/logs
+    YESTERDAY=$(date -d "yesterday" +%Y-%m-%d)
+    mv ${LOGS_PATH}/access.log ${LOGS_PATH}/access_${YESTERDAY}.log
+    kill -USR1 $(cat /usr/local/nginx/logs/nginx.pid)   # 向 Nginx 主进程发送 USR1 信号。USR1 信号是重新打开日志文件
+    
+    注意：执行 sed -i 's/\r$//' cutlog.sh
+    原因：
+    
+        这个文件在Windows 下编辑过，在Windows下每一行结尾是\n\r，而Linux下则是\n
+    
+        sed -i 's/\r$//' cutlog.sh 会把cutlog.sh中的行尾的\r替换为空白
+    
+    
+    设置定时任务
+    # vi  /etc/crontab
+    0 0 * * * root /usr/local/nginx/logs/cutlog.sh  
+    表示配置一个定时任务，定时每天00:00以root身份执行脚本/usr/local/nginx/logs/cutlog.sh，实现定时自动分割Nginx日志
+
