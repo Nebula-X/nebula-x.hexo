@@ -792,3 +792,64 @@ catagories:
     $request_uri ：          #包含请求参数的原始URI，不包含主机名，如：”/foo/bar.php?arg=baz”。
     $uri ：                        #不带请求参数的当前URI，$uri不包含主机名，如”/foo/bar.html”。
     $document_uri ：      #与$uri相同
+
+## Nginx的Lua模块
+
+    Nginx的优势
+        Nginx设计为一个主进程多个工作进程的工作模式，每个进程是单线程来处理多个连接，而且每个工作进程采用了非阻塞I/O来处理多个连接，从而减少了线程上下文切换，从而实现了公认的高性能、高并发;因此在生成环境中会通过把CPU绑定给Nginx工作进程从而提升其性能;另外因为单线程工作模式的特点，内存占用就非常少了。 
+        Nginx更改配置重启速度非常快，可以毫秒级，而且支持不停止Nginx进行升级Nginx版本、动态重载Nginx配置。  
+        Nginx模块也是非常多，功能也很强劲，不仅可以作为http负载均衡，Nginx发布1.9.0版本还支持TCP负载均衡，还可以很容易的实现内容缓存、web服务器、反向代理、访问控制等功能。
+        nginx模块：rewrite 经常用到的
+    
+    什么是ngx_lua
+        ngx_lua是Nginx的一个模块，将Lua嵌入到Nginx中，从而可以使用Lua来编写脚本，这样就可以使用Lua编写应用脚本，部署到Nginx中运行，即Nginx变成了一个Web容器;这样开发人员就可以使用Lua语言开发高性能Web应用了。
+        
+        网站开发，也有一个重要的脚步语言，javascript，js文件；；；客户端脚步语言；；；（node.js服务器语言）
+        网站页面进行渲染的时候，可以通过javascript脚本语言 进行一些业务处理
+        <script>
+        function hello(){
+        	alert("hello");
+        }
+        </script>
+        脚本文件，还需要一个javascript引擎---解析javascript脚本语言
+        全部的浏览器 都包含 javascript引擎
+        
+        
+        lua -- javascript  一样的脚本语言
+        lua脚本语言 应用  ----》游戏开发中
+        
+        
+        Lua是一种轻量级、可嵌入式的脚本语言，这样可以非常容易的嵌入到其他语言中使用。另外Lua提供了协程并发，即以同步调用的方式进行异步执行，从而实现并发，比起回调机制的并发来说代码更容易编写和理解，排查问题也会容易。Lua还提供了闭包机制，函数可以作为First Class Value 进行参数传递，另外其实现了标记清除垃圾收集。
+        
+        因为Lua的小巧轻量级，可以在Nginx中嵌入Lua VM，请求的时候创建一个VM，请求结束的时候回收VM。
+        
+        ngx_lua模块的原理：
+        ngx_lua将Lua嵌入Nginx，能够让Nginx运行Lua脚本，而且高并发、非堵塞的处理各种请求。Lua内建协程。这样就能够非常好的将异步回调转换成顺序调用的形式。ngx_lua在Lua中进行的IO操作都会托付给Nginx的事件模型。从而实现非堵塞调用。开发人员能够採用串行的方式编敲代码，ngx_lua会自己主动的在进行堵塞的IO操作时中断。保存上下文；然后将IO操作托付给Nginx事件处理机制。在IO操作完毕后，ngx_lua会恢复上下文，程序继续运行，这些操作都是对用户程序透明的。
+        每一个NginxWorker进程持有一个Lua解释器或者LuaJIT实例，被这个Worker处理的全部请求共享这个实例。
+        
+        每一个请求的Context会被Lua轻量级的协程切割，从而保证各个请求是独立的。 ngx_lua採用“one-coroutine-per-request”的处理模型。对于每一个用户请求，ngx_lua会唤醒一个协程用于执行用户代码处理请求，当请求处理完毕这个协程会被销毁。
+        
+        每一个协程都有一个独立的全局环境（变量空间），继承于全局共享的、仅仅读的“comman data”。所以。被用户代码注入全局空间的不论什么变量都不会影响其它请求的处理。而且这些变量在请求处理完毕后会被释放，这样就保证全部的用户代码都执行在一个“sandbox”（沙箱），这个沙箱与请求具有同样的生命周期。 得益于Lua协程的支持。ngx_lua在处理10000个并发请求时仅仅须要非常少的内存。依据測试，ngx_lua处理每一个请求仅仅须要2KB的内存，假设使用LuaJIT则会更少。所以ngx_lua非常适合用于实现可扩展的、高并发的服务。
+        
+        ngx_lua 模块提供的指令和API
+        
+        三、ngx_lua安装
+        echo模块
+            ngx_lua安装能够通过下载模块源代码，编译Nginx。可是推荐採用openresty。Openresty就是一个打包程序，包括大量的第三方Nginx模块，比方HttpLuaModule，HttpRedis2Module，HttpEchoModule等。省去下载模块。而且安装很方便。        
+            OpenResty将Nginx核心、LuaJIT、许多有用的Lua库和Nginx第三方模块打包在一起;这样开发人员只需要安装OpenResty，不需要了解Nginx核心和写复杂的C/C++模块就可以，只需要使用Lua语言进行Web应用开发了。        
+        
+        OpenResty提供了一些常用的ngx_lua开发模块：如        
+            lua-resty-memcached       
+            lua-resty-mysql        
+            lua-resty-redis        
+            lua-resty-dns        
+            lua-resty-limit-traffic        
+            lua-resty-template       
+        nginx + lua 就可以开发出 一些系统。龙果学院中 有一门课程 就专门应用了这个技术  
+        这些模块涉及到如mysql数据库、redis、限流、模块渲染等常用功能组件;另外也有很多第三方的ngx_lua组件供我们使用，对于大部分应用场景来说现在生态环境中的组件已经足够多了;如果不满足需求也可以自己去写来完成自己的需求。
+        openresty.org/cn官网
+        
+        应用场景
+        应用的公司：奇虎360、京东、百度、魅族、知乎、优酷、新浪这些互联网公司都在使用。
+        业务场景： WAF、有做 CDN 调度、广告系统、消息推送系统，API server 网关
+    
