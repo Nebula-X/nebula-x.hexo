@@ -388,3 +388,61 @@ catagories:
              }
          }
        
+#### Nginx虚拟主机
+    1）虚拟主机
+    虚拟主机使用的是特殊的软硬件技术，它把一台运行在因特网上的服务器主机分成一台台“虚拟”的主机，每台虚拟主机都可以是一个独立的网站，可以具有独立的域名，具有完整的Intemet服务器功能（WWW、FTP、Email等），同一台主机上的虚拟主机之间是完全独立的。从网站访问者来看，每一台虚拟主机和一台独立的主机完全一样。
+    利用虚拟主机，不用为每个要运行的网站提供一台单独的Nginx服务器或单独运行一组Nginx进程。虚拟主机提供了在同一台服务器、同一组Nginx进程上运行多个网站的功能。
+    
+    2）配置虚拟主机
+    我们先配置在一个nginx中配置一个虚拟主机，编辑nginx.conf配置文件，在http模块中，配置server模块，一个server模块就针对一个虚拟主机。
+    我们模拟一个独立的网站，此网站域名访问为www.server1.com；网站的根目录放到nginx目录下html/server1目录，我们创建一个首页index.html到server1中，编辑index.html
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <title>server1 首页</title>
+    </head>
+    <body>
+    <h1>server1 首页</h1>
+    </body>
+    </html>
+    下面我们回到nginx.conf配置文件中，配置server模块
+    server {
+    listen 80; #监听80端口
+    server_name www.server1.com; #虚拟主机名，可以为域名或ip地址
+    location / { #默认请求路由，以后文章中会重点介绍
+    root html/server1; #网站的根目录
+    index index.html index.htm; #默认首页文件名
+    }
+    }
+    配置完成之后，重启nginx。因为www.server1.com是模拟的，需要在访问的客户端配置一下域名映射，老顾访问的客户端用的是windows系统，所以要到C:\Windows\System32\drivers\etc\目录下，编辑hosts文件，增加个映射
+    192.168.5.150 www.server1.com
+    192.168.5.150是老顾的nginx服务器地址，注意编辑hosts要用管理员身份编辑，要不然会报无权限修改错误。
+    打开浏览器，访问www.server1.com
+    
+    
+    3）第一个虚拟主机配置完成，我们再配置一个server2，与server1配置类似，先给server2网站创建一个根目录，nginx目录下html/server2目录，编辑index.html
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <title>server2</title>
+    </head>
+    <body>
+    <h1>server2 首页</h1>
+    </body>
+    </html>
+    再编辑nginx.conf，再增加个server模块，监听还是80端口，但服务名改为www.server2.com
+    server {
+    listen 80; #监听80端口
+    server_name www.server2.com; #虚拟主机名，可以为域名或ip地址
+    location / { #默认请求路由，以后文章中会重点介绍
+        root html/server2; #网站的根目录
+        index index.html index.htm; #默认首页文件名
+    }
+    }
+    重启nginx，不要忘了把hosts再增加个域名映射
+    192.168.5.150 www.server2.com
+    打开浏览器访问www.server2.com,运行结果
+    
+    
+    这样第二个虚拟主机也配置完成。说明一下 再配置server模块是，监听的端口 listen 和 server_name 组合起来是唯一的，如果server_name一样，那么listen监听的端口就不一样；如端口一样，server_name就不一样。这是很好理解的，虚拟主机的请求映射系统才能够判别。
+
