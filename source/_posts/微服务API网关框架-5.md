@@ -157,6 +157,7 @@ catagories:
     那么调用 require("model") 时就会尝试打开以下文件目录去搜索目标。
     
 ## 元表(Metatable)
+    元表更多的是符号重载的内容
     http://www.runoob.com/lua/lua-metatables.html
     https://www.cnblogs.com/blueberryzzz/p/8947446.html
     
