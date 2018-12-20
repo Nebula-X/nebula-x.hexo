@@ -535,3 +535,139 @@ catagories:
     0 0 * * * root /usr/local/nginx/logs/cutlog.sh  
     表示配置一个定时任务，定时每天00:00以root身份执行脚本/usr/local/nginx/logs/cutlog.sh，实现定时自动分割Nginx日志
 
+## Nginx的Location
+    nginx的location配置详解
+    1）语法规则： location [=|~|~*|^~] /uri/ { … }
+    构成：
+    指令                  前缀                  uri
+    location          [=|~|~*|^~]           /uri
+    
+    路由匹配规则，正则匹配，正则表达式
+    
+    
+    
+    2）location区分普通匹配和正则匹配
+    
+    用前缀 “~” 和 “~*”修饰的为正则匹配
+    ~   前缀表示区分大小写的正则匹配
+    ~*  前缀表示不区分大小写的正则匹配
+    
+    除上面修饰的前缀（“=” 和 “^~”，或没有前缀修饰）都为普通匹配
+    =   前缀表示精确匹配
+    ^~  前缀表示uri以某个常规字符串开头，可以理解为url的普通匹配
+    
+    location作用于server模块,且支持多个location模块
+    server {
+           .........
+            location /p {
+                root   html/p;
+                index  index.html index.htm;
+            }
+            location = /50x.html {
+                root   html;
+            }
+            location / {
+                root   html/server1;
+                index  index.html index.htm;
+            }
+    }
+    在多个location情况下，是按照什么原则进行匹配的呢？
+    
+    3）匹配的原则
+    普通匹配：优先原则---->最大前缀匹配原则; 顺序无关
+    如：
+    server {
+    	location /prefix/ {
+    		#规则A
+    	}
+    	location /prefix/mid/ {
+    		#规则B
+    	} 
+    }
+    
+    请求url为：/prefix/mid/t.html 
+    
+    此请求匹配的是 规则B，是以最大的匹配原则进行的，跟顺序无关
+    
+    ------------------------
+    正则匹配：为顺序匹配，优先原则：谁在前面 就匹配谁；顺序相关
+    如：
+    server {
+    	location ~ \.(gif|jpg|png|js|css)$ {
+    	   		#规则C
+    	}
+    	location ~* \.png$ {
+    	   		#规则D
+    	}
+    }
+    请求http://localhost/1.png,匹配的是规则C，因为规则C在前面，即叫做顺序匹配
+    
+    ----------------
+    如果location有普通匹配也有正则匹配，那匹配的原则为
+    匹配模式及顺序
+    ----带前缀普通匹配 最优先，=前缀优先级最高
+    location = /uri 　　　=开头表示精确匹配，只有完全匹配上才能生效。
+    location ^~ /uri 　　^~ 开头对URL路径进行前缀匹配，并且在正则之前。
+    ----正则匹配
+    location ~ pattern 　~开头表示区分大小写的正则匹配。
+    location ~* pattern 　~*开头表示不区分大小写的正则匹配。
+    ---不带前缀匹配
+    location /uri 　　　　不带任何修饰符，也表示前缀匹配，但是在正则匹配之后。
+    
+    location / 　　　　　通用匹配，任何未匹配到其它location的请求都会匹配到，相当于switch中default。 
+    
+    首先匹配 =，其次匹配^~, 其次是按文件中顺序的正则匹配，不带前缀普通匹配，最后是交给 / 通用匹配。
+    当有匹配成功时候，停止匹配，按当前匹配规则处理请求。
+    
+    例子，有如下匹配规则：
+    location = / {
+                return 200 '规则A';
+            }
+    location = /login {
+                return 200 '规则B';
+            }
+    location ^~ /static/ {
+                return 200 '规则C';
+            }
+    location ~ \.(gif|jpg|png|js|css)$ {
+                return 200 '规则D';
+            }
+    location ~* \.js$ {
+                return 200 '规则E';
+            }	
+    location / {
+                return 200 '规则F';
+    }
+    那么产生的效果如下：
+    访问根目录/， 比如http://localhost/ 将匹配规则A
+    访问 http://localhost/login 将匹配规则B，
+    http://localhost/register 则匹配规则F
+    http://localhost/static/a.html 将匹配规则C
+    http://localhost/a.css, 匹配规则D
+    http://localhost/b.js则优先匹配到 规则D，不会匹配到规则E
+    http://localhost/static/c.js 则优先匹配到 规则C
+    http://localhost/a.JS 则匹配规则E， 而不会匹配规则D，因为规则E不区分大小写。
+    访问 http://localhost/category/id/1111 则最终匹配到规则F，因为以上规则都不匹配，
+    
+    
+    4）在实际场景中，通常至少有三个匹配规则定义，如下：
+    #直接匹配网站根，通过域名访问网站首页比较频繁，使用这个会加速处理。
+    #这里是直接转发给后端应用服务器了，也可以是一个静态首页
+    # 第一个必选规则
+    location = / {
+        .....
+    }
+    # 第二个必选规则是处理静态文件请求，这是nginx作为http服务器的强项
+    # 有两种配置模式，目录匹配或后缀匹配,任选其一或搭配使用
+    location ^~ /static {
+        root /webroot/static/;
+    }
+    location ~* \.(gif|jpg|jpeg|png|css|js|ico)$ {
+        root /webroot/res/;
+    }
+    #第三个规则就是通用规则，用来转发动态请求到后端应用服务器
+    #非静态文件请求就默认是动态请求，自己根据实际把握
+    #毕竟目前的一些框架的流行，带.php,.jsp后缀的情况很少了
+    location / {
+        .....
+    }
