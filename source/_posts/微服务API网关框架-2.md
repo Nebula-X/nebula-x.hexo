@@ -671,3 +671,124 @@ catagories:
     location / {
         .....
     }
+
+## Nginx负载均衡
+    当一台服务器单位时间内访问量很大的时候，服务器压力就会很大，当达到这台服务器的极限，就会崩溃；怎么解决？可以通过nginx的反向代理设置，添加几台同样功能的服务器 分担压力。
+    
+    nginx实现负载均衡原理，用户访问首先访问到nginx服务器，然后nginx服务器再从应用服务器集群中选择压力比较小的服务器，然后将该访问请求引向该服务器。如应用服务器集群中某一台服务器崩溃，那么从待选择服务器列表中将该服务器删除，也就是说一个服务器崩溃了，那么nginx服务器不会把请求引向到该服务器。
+    
+    upstream mypro {
+        server 192.168.5.140:8080;
+        server 192.168.5.141:8080;
+        xxxxx
+        xxxx
+    }
+    
+    server {
+        listen 80;
+        server_name xxxx;
+        location / {
+            proxy_pass http://mypro;
+        } 
+     }
+    
+### 负载均衡方案
+    
+#### 随机轮询
+    upstream mypro {
+        server 192.168.5.140:8080;
+        server 192.168.5.141:8080;
+    }
+    
+#### 权重
+    upstream mypro {
+        server 192.168.5.140:8080 weight=5;
+        server 192.168.5.141:8080 weight=10;
+    }
+    
+#### ip_hash
+    upstream mypro {
+        ip_hash;
+        server 192.168.5.140:8080;
+        server 192.168.5.141:8080;
+    }
+    
+#### 使用方式
+    server {
+        listen       80;
+        server_name  192.168.5.138;
+         location / {
+            proxy_pass http://mypro;
+        }
+    }
+    
+## Nginx拓展模块安装
+    查看nginx安装的现有模块指令
+    /usr/local/nginx/sbin/nginx -V （大写的V）
+    nginx version: nginx/1.13.2
+    built by gcc 4.8.5 20150623 (Red Hat 4.8.5-16) (GCC) 
+    configure arguments:
+    
+    1、下载需要的echo模块
+    https://github.com/openresty/echo-nginx-module/tags
+    # wget https://github.com/openresty/echo-nginx-module/archive/v0.61.tar.gz
+    # tar zxvf v0.61.tar.gz
+    # mv echo-nginx-module-0.61 nginx-tools/
+    
+    2、重新编译nginx，安装echo-nginx模块
+    进入nginx源文件，重新编译
+    # ./configure --add-module=nginx安装目录下面/echo-nginx-module-0.61 #安装echo模块(文件夹名echo-nginx-module-0.61)
+    # make #开始编译，但别安装 （make install会直接覆盖安装）
+    
+    3、平滑升级 nginx
+    
+    注意先备份一下之前老的，手动安装一下。
+    # mv /usr/local/nginx/sbin/nginx /usr/local/nginx/sbin/nginx.old
+    # cp -f objs/nginx /usr/local/nginx/sbin/nginx
+    
+    这里是平滑升级，如是全新安装请执行：make install
+    # make upgrade 
+    # make clean （清除编译产生的文件，可以忽略）
+    
+    
+    
+    location /module {
+        echo 'hello world'; 
+    }
+    --------------------
+    location /module {
+                echo_exec /set;
+    }
+            
+    location /set {
+        set $foo 'hello world';     #自定义变量
+        echo "$request_uri";      #显示nginx全局变量的内容
+        echo $foo;
+    }
+    
+    
+    lua模块：可以在nginx服务中执行lua脚本
+    
+    
+    nginx全局变量
+    $args ：                     #这个变量等于请求行中的参数，同$query_string
+    $content_length ：    #请求头中的Content-length字段。
+    $content_type ：       #请求头中的Content-Type字段。
+    $document_root ：   #当前请求在root指令中指定的值。
+    $host ：                     #请求主机头字段，否则为服务器名称。
+    $http_user_agent ：  #客户端agent信息
+    $http_cookie ：          #客户端cookie信息
+    $limit_rate ：              #这个变量可以限制连接速率。
+    $request_method ：   #客户端请求的动作，通常为GET或POST。
+    $remote_addr ：         #客户端的IP地址。
+    $remote_port ：          #客户端的端口。
+    $remote_user ：         #已经经过Auth Basic Module验证的用户名。
+    $request_filename ： #当前请求的文件路径，由root或alias指令与URI请求生成。
+    $scheme ：                #HTTP方法（如http，https）。
+    $server_protocol ：    #请求使用的协议，通常是HTTP/1.0或HTTP/1.1。
+    $server_addr ：         #服务器地址，在完成一次系统调用后可以确定这个值。
+    $server_name ：       #服务器名称。
+    $server_port ：          #请求到达服务器的端口号。
+    $request_uri ：          #包含请求参数的原始URI，不包含主机名，如：”/foo/bar.php?arg=baz”。
+    $uri ：                        #不带请求参数的当前URI，$uri不包含主机名，如”/foo/bar.html”。
+    $document_uri ：      #与$uri相同
