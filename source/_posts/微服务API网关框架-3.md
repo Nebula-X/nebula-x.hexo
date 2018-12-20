@@ -42,6 +42,70 @@ catagories:
     return    then    true    until
     while
 
+#### return 和 break 关键字
+    1）break
+    语句 break 用来终止 while、repeat 和 for 三种循环的执行，并跳出当前循环体， 继续执行当前循环之后的语句。下面举一个 while 循环中的 break 的例子来说明：
+    -- 计算最小的x,使从1到x的所有数相加和大于100
+    sum = 0
+    i = 1
+    while true do
+        sum = sum + i
+        if sum > 100 then
+            break
+        end
+        i = i + 1
+    end
+    print("The result is " .. i)  -->output:The result is 14
+    在实际应用中，break 经常用于嵌套循环中。
+    
+    2）return
+      return 主要用于从函数中返回结果，或者用于简单的结束一个函数的执行。 
+      return 只能写在语句块的最后，一旦执行了 return语句，该语句之后的所有语句都不会再执行。
+    
+      执行return方法，如果实在主函数体里面，不在语句块中；执行return  且没有返回值，之后的语句照样会执行
+    
+    
+      若要写在函数中间，则只能写在一个显式的语句块内，参见示例代码：
+    
+    local function add(x, y)
+        return x + y
+    end
+    
+    local function is_positive(x)
+        if x > 0 then
+            return x .. " is > 0"
+        else
+            return x .. " is not > 0"
+        end
+    
+        print("function end!")
+    end
+    
+    --由于return只出现在前面显式的语句块，所以此语句不注释也不会报错
+    --，但是不会被执行，此处不会产生输出
+    
+    
+    sum = add(10, 20)
+    print("The sum is " .. sum)  -->output:The sum is 30
+    answer = is_positive(-10)
+    print(answer)                -->output:-10 is is not > 0
+    
+    ### (重点)Return的重点特性
+    有时候，为了调试方便，我们可以想在某个函数的中间提前 return，以进行控制流的短路。此时我们可以将 return 放在一个 do ... end 代码块中，例如：
+    
+    local function add(x, y)
+        print(1)
+        return
+        print(2)
+    end
+    --return 不放在语句块中，return 也没有返回值，不注释该语句，不会报错; 但会执行return之后的业务
+    
+    local function add(x, y)
+        print(1)
+        do return end
+        print(2)
+    end
+
 ### 变量
     Lua 变量有三种类型：全局变量、局部变量、表中的域
     变量在使用前，必须在代码中进行声明，即创建该变量
@@ -52,9 +116,55 @@ catagories:
         (2)全局变量不需要声明，给一个变量赋值后即创建了这个全局变量，访问一个没有初始化的全局变量也不会出错，只不过得到的结果是：nil。
         (3)如果你想删除一个全局变量，只需要将变量赋值为nil。
         (4)Lua 中的变量全是全局变量，那怕是语句块或是函数里，除非用 local 显式声明为局部变量。
+        (5)其实本质上也是一个table，它把我们创建的全局变量都保存到一个table里了
+            而这个table的名字是：_G
+            -- 定义一个全局变量
+            gName = "我是个全局变量";
+            -- 用三种方式输出变量的值
+            print(gName);
+            print(_G["gName"]);
+            print(_G.gName);
     2.局部变量
         局部变量的作用域为从声明位置开始到所在语句块结束。
     3.表中的域
+    4.虚变量 ("_")
+        当一个方法返回多个值时，有些返回值有时候用不到，要是声明很多变量来一一接收，显然不太合适（不是不能）。
+        Lua 提供了一个虚变量，以单个下划线（“_”）来命名，用它来丢弃不需要的数值，仅仅起到占位的作用。
+        
+        local start, finish = string.find("hello", "he") --start 值为起始下标，finish
+                                                         --值为结束下标
+        print ( start, finish )                          --输出 1   2
+        local start = string.find("hello", "he")      -- start值为起始下标
+        print ( start )                               -- 输出 1        
+        local _,finish = string.find("hello", "he")   --采用虚变量（即下划线），接收起
+                                                      --始下标值，然后丢弃，finish接收
+                                                      --结束下标值
+        print ( finish )                              --输出 2       
+        代码倒数第二行，定义了一个用 local 修饰的 虚变量（即 单个下划线）。使用这个虚变量接收 string.find() 第一个返回值，静默丢掉，这样就直接得到第二个返回值了。
+        虚变量不仅仅可以被用在返回值，还可以用在迭代等。
+        
+        local t = {1, 3, 5}
+        print("all  data:")
+        for i,v in ipairs(t) do
+            print(i,v)
+        end
+        print("")
+        print("part data:")
+        for _,v in ipairs(t) do
+            print(v)
+        end
+        
+        执行结果：
+        # luajit test.lua
+        all  data:
+        1   1
+        2   3
+        3   5
+        
+        part data:
+        1
+        3
+        5
     
 #### 赋值
     1. 使用"="号进行赋值
@@ -346,6 +456,45 @@ catagories:
         www.w3cschool.cc
         > print(site.key)
         www.w3cschool.cc
+        
+    5. ipairs和pairs的区别
+        为了看出两者的区别，首先定义一个table:
+        a={"Hello","World";a=1,b=2,z=3,x=10,y=20;"Good","Bye"}  
+        for i, v in ipairs(a) do
+        	print(v)
+        end
+        输出的结果是：
+        Hello
+        World
+        Good
+        Bye
+        可见ipairs并不会输出table中存储的键值对，会跳过键值对，然后按顺序输出table中的值。
+        再使用pairs对其进行遍历：
+        for i, v in pairs(a) do
+        	print(v)
+        end
+        输出的结果是：
+        Hello 
+        World 
+        Good  
+        Bye   
+        1     
+        10    
+        2     
+        20    
+        3     
+        可见pairs会输出table中的值和键值对，并且在输出的过程中先按顺序输出值，再乱序输出键值对。
+        这是因为table在存储值的时候是按照顺序的，但是在存储键值对的时候是按照键的哈希值存储的，
+        并不会按照键的字母顺序或是数字顺序存储。
+        对于a来说，如果执行print(a[3]),输出的结果也会是Good。也就是说table并不会给键值对一个索引值。
+        
+        也就是说ipairs只是按照索引值顺序，打印出了table中有索引值的数据，没有索引值的不管。
+        而pairs是先按照数组索引值打印，打印完成后再按照哈希键值对的键的哈希值打印它的值。
+        
+        
+        LuaJIT 2.1  新增加的 table.new 和 table.clear 函数是非常有用的。
+        前者主要用来预分配 Lua table 空间，后者主要用来高效的释放 table 空间，并且它们都是可以被 JIT 编译的。
+
 
 ##### table -- 操作
     1.table.concat (table [, sep [, start [, end]]]):concat是concatenate(连锁, 连接)的缩写. table.concat()函数列出参数中指定table的数组部分从start位置到end位置的所有元素, 元素间以指定的分隔符(sep)隔开。
