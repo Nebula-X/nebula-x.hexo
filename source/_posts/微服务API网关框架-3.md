@@ -191,6 +191,14 @@ catagories:
            应该尽可能的使用局部变量，有两个好处：
                1. 避免命名冲突。
                2. 访问局部变量的速度比全局变量更快。
+	6.函数作为赋值的返回，需要注意的现象
+		function show()
+			return 8, 10
+		end
+
+		a, b, c = show() -- 返回结果: 8,10,nil
+		a, b, c = show(), 18 -- 返回结果: 8,18,nil
+		print(a, b, c)
 ### 数据类型
     Lua是动态类型语言，变量不要类型定义,只需要为变量赋值。 值可以存储在变量中，作为参数传递或结果返回。
     Lua中有8个基本类型分别为：nil、boolean、number、string、userdata、function、thread和table。
